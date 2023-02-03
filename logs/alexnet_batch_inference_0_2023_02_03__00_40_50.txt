@@ -1,6 +1,0 @@
-Script started on 2023-02-03 00:40:50-0500
-
-	python3 ./8 alexnet
-	
-
-Script done on 2023-02-03 00:40:51-0500

@@ -1,7 +1,0 @@
-Script started on 2023-02-03 00:21:50-0500
-  File "../lib/power_profile.py", line 8
-    from ../lib/tegrastats import Tegrastats
-           ^
-SyntaxError: invalid syntax
-
-Script done on 2023-02-03 00:21:50-0500

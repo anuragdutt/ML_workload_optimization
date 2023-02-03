@@ -1,4 +1,0 @@
-Script started on 2023-02-03 00:16:10-0500
-python3: can't open file 'power_profile.py': [Errno 2] No such file or directory
-
-Script done on 2023-02-03 00:16:10-0500
