@@ -43,8 +43,8 @@ if __name__ == "__main__":
 	execution_file = args.inference
 	cpu_freqs = str_split(args.cpu_freq)
 	gpu_freqs = str_split(args.gpu_freq)
-	cores = args.core
-	experiments = args.experiment
+	cores = int(args.core)
+	experiments = int(args.experiment)
 	models = str_split(args.model_name)
 
 	if models == "matmul":
