@@ -50,7 +50,7 @@ def fast_matmul(A, B, C):
 
 if __name__ == "__main__":
 
-    mat_size = sys.argv[1]
+    mat_size = int(sys.argv[1])
     # Initialize the data arrays
     A = np.full((mat_size, mat_size), 3, np.float) # matrix containing all 3's
     B = np.full((32, 32), 4, np.float) # matrix containing all 4's

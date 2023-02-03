@@ -46,7 +46,7 @@ def _decode(text):
 	stats['WATT'] = WATTS(text)
 	return stats
 
-def logging(i2c_folder):
+def logging(i2c_folder, cpu_usage_file, gpu_usage_file, f_stats, stop_logging):
 	print("Starting logs")
 	try:
 		# print("Timestamp, Complete_Board Power, GPU Power, CPU Power, %GPU, %CPU1, %CPU2, %CPU3, %CPU4, Model, Batch Size, NVP Model",file=f_stats)
@@ -112,7 +112,7 @@ def logging(i2c_folder):
 	print("Stopping logs")
 
 
-def tegra_logging():
+def tegra_logging(tegra_val):
 	print("Starting saving tegrastats")
 	try:
 		while True:
@@ -127,7 +127,7 @@ def tegra_logging():
 				# Decode and store
 				stats = _decode(tegrastats_data)
 				#print(stats)
-				global tegra_val 
+				# global tegra_val 
 				tegra_val = stats		
 			pts.terminate()
 			if stop_logging[0]:
@@ -143,8 +143,7 @@ if __name__ == "__main__":
 
 
 	stats_nick = sys.argv[1]
-	PATH_TEGRASTATS = ['/usr/bin/tegrastats', '/home/nvidia/tegrastats']
-	path_tegrastats=PATH_TEGRASTATS
+	path_tegrastats = ['/usr/bin/tegrastats', '/home/nvidia/tegrastats']
 	i2c_folder = "/sys/bus/i2c/drivers/ina3221x/6-0040/iio:device0/"
 	f_stats = open("logs/power_stats_"+stats_nick+".performance.log","w")
 	cpu_usage_file = "/proc/stat"
@@ -168,7 +167,7 @@ if __name__ == "__main__":
 
 	# if "matmul" not in sys.argv[4]:
 	command = """
-	python3 ./{} {}
+	python3 lib/{} {}
 	""".format(sys.argv[4],sys.argv[3])
 	# else:
 	# 	command = """ {}""".format(sys.argv[3])
@@ -180,17 +179,17 @@ if __name__ == "__main__":
 
 
 
-tegra_thread = threading.Thread(target=tegra_logging) #polls at 1 sec
-t = threading.Thread(target=logging) #polls at 1/10 sec
-tegra_thread.start()
-t.start()
-process = subprocess.Popen(command,stdin=subprocess.PIPE,shell=True)
+	tegra_thread = threading.Thread(target=tegra_logging, args = [tegra_val]) #polls at 1 sec
+	t = threading.Thread(target=logging, args=[i2c_folder, cpu_usage_file, gpu_usage_file, f_stats, stop_logging]) #polls at 1/10 sec
+	tegra_thread.start()
+	t.start()
+	process = subprocess.Popen(command,stdin=subprocess.PIPE,shell=True)
 
-process.communicate()
-stop_logging[0] = True
-t.join()
-tegra_thread.join()
-# tegra.close()
-f_stats.close()
+	process.communicate()
+	stop_logging[0] = True
+	t.join()
+	tegra_thread.join()
+	# tegra.close()
+	f_stats.close()
 
 
