@@ -1,0 +1,6 @@
+Script started on 2023-02-03 00:42:00-0500
+
+	python3 ./batch_inference.py 8
+	
+
+Script done on 2023-02-03 00:42:00-0500

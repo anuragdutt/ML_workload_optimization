@@ -1,0 +1,7 @@
+Script started on 2023-02-03 00:17:24-0500
+Traceback (most recent call last):
+  File "../lib/power_profile.py", line 8, in <module>
+    from tegrastats import Tegrastats
+ModuleNotFoundError: No module named 'tegrastats'
+
+Script done on 2023-02-03 00:17:24-0500
