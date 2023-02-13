@@ -66,8 +66,8 @@ if __name__ == "__main__":
 
     # Configure the blocks
     threadsperblock = (32, 32)
-    blockspergrid_x = int(32768)
-    blockspergrid_y = int(32768)
+    blockspergrid_x = int(4096)
+    blockspergrid_y = int(4096)
     # blockspergrid_x = int(math.ceil(A.shape[0] / threadsperblock[0]))
     # blockspergrid_y = int(math.ceil(B.shape[1] / threadsperblock[1]))
 
