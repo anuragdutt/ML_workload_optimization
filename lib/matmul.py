@@ -65,11 +65,11 @@ if __name__ == "__main__":
     C_global_mem = cuda.device_array((mat_size, mat_size))
 
     # Configure the blocks
-    threadsperblock = (32, 32)
-    blockspergrid_x = int(128)
-    blockspergrid_y = int(128)
-    # blockspergrid_x = int(math.ceil(A.shape[0] / threadsperblock[0]))
-    # blockspergrid_y = int(math.ceil(B.shape[1] / threadsperblock[1]))
+    threadsperblock = (16, 16)
+    # blockspergrid_x = int(256)
+    # blockspergrid_y = int(256)
+    blockspergrid_x = int(math.ceil(A.shape[0] / threadsperblock[0]))
+    blockspergrid_y = int(math.ceil(B.shape[1] / threadsperblock[1]))
 
     blockspergrid = (blockspergrid_x, blockspergrid_y)
     
@@ -84,5 +84,5 @@ if __name__ == "__main__":
     print("TimeLazyLoadSleep --"+ str(time.time()))
     
     # Start the kernel 
-    for i in range(0,20):
+    for i in range(0,50):
         fast_matmul[blockspergrid, threadsperblock](A_global_mem, B_global_mem, C_global_mem)
