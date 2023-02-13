@@ -3,6 +3,9 @@ import time
 from os import walk
 import sys
 import argparse
+# from lib.nano_nvpmplus import set_state
+import subprocess
+
 sys.path.append("../lib")
 
 
@@ -75,6 +78,8 @@ if __name__ == "__main__":
 						for gpu_max_fq in gpu_freqs:
 							for batch in bat: #[8,16,32,64]
 								process3 = subprocess.Popen(command_readplogs.format(cpu, cpu_max_fq, gpu_max_fq),stdin=subprocess.PIPE,shell=True)
+								# subprocess.Popen("nvpmodel -m 0",stdin=subprocess.PIPE,shell=True)
+								# set_state(cpu, cpu_max_fq, gpu_max_fq)
 								low_pow_file = model + "_" + fl.split('.')[0]+"_"+str(iter)+"_"+time.strftime("%Y_%m_%d__%H_%M_%S")
 								process1 = subprocess.Popen(command_logstart.format(low_pow_file + ".txt",low_pow_file, model, batch, fl, iter, cpu, cpu_max_fq, gpu_max_fq),stdin=subprocess.PIPE,shell=True)
 								# PRAMODH: the following line is not working!
