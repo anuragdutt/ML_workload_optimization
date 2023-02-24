@@ -4,6 +4,7 @@ import numpy as np
 import numba as nb
 from numba import cuda, float32
 import math
+import time
 
 # Controls threads per block and shared memory usage.
 # The computation will be done on blocks of TPBxTPB elements.
@@ -50,23 +51,38 @@ def fast_matmul(A, B, C):
 
 if __name__ == "__main__":
 
+
     mat_size = int(sys.argv[1])
     # Initialize the data arrays
     A = np.full((mat_size, mat_size), 3, np.float) # matrix containing all 3's
-    B = np.full((32, 32), 4, np.float) # matrix containing all 4's
+    B = np.full((mat_size, mat_size), 4, np.float) # matrix containing all 4's
 
     # Copy the arrays to the device
     A_global_mem = cuda.to_device(A)
     B_global_mem = cuda.to_device(B)
 
     # Allocate memory on the device for the result
-    C_global_mem = cuda.device_array((24, 22))
+    C_global_mem = cuda.device_array((mat_size, mat_size))
 
     # Configure the blocks
-    threadsperblock = (32, 32)
+    threadsperblock = (16, 16)
+    # blockspergrid_x = int(256)
+    # blockspergrid_y = int(256)
     blockspergrid_x = int(math.ceil(A.shape[0] / threadsperblock[0]))
     blockspergrid_y = int(math.ceil(B.shape[1] / threadsperblock[1]))
-    blockspergrid = (blockspergrid_x, blockspergrid_y)
 
-    # Start the kernel 
+    blockspergrid = (blockspergrid_x, blockspergrid_y)
+    
+    print("TimePreModel --"+ str(time.time()))
+    time.sleep(1)
+    print("TimePreModelSleep --"+ str(time.time()))
+
     fast_matmul[blockspergrid, threadsperblock](A_global_mem, B_global_mem, C_global_mem)
+    
+    print("TimeLazyLoad --"+ str(time.time()))
+    time.sleep(1)
+    print("TimeLazyLoadSleep --"+ str(time.time()))
+    
+    # Start the kernel 
+    for i in range(0,50):
+        fast_matmul[blockspergrid, threadsperblock](A_global_mem, B_global_mem, C_global_mem)
