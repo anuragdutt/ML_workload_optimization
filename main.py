@@ -34,11 +34,11 @@ if __name__ == "__main__":
 	parser.add_argument("-co", "--core", help="number of cores (1,2,3,4)", 
 						default = 4)
 	parser.add_argument("-e", "--experiment", help="number of experiments per configuration", \
-						default = 5)
+						default = 10)
 	parser.add_argument("-m", "--model_name", help="name of the model to be printed", \
 						default = "alexnet")
 	parser.add_argument("-b", "--batch_size", help="batch_size/matrix size in case of matmul", \
-						default = "8,16,32,64")
+						default = "512")
 	
 
 
