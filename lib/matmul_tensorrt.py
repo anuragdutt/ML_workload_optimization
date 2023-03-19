@@ -5,7 +5,7 @@ import time
 
 model_trt = TRTModule()
 
-model_trt.load_state_dict(torch.load('matmul_trt.pth'))
+model_trt.load_state_dict(torch.load('lib/matmul_trt.pth'))
 
 m1 = (int(sys.argv[1]), int(sys.argv[1]))
 m2 = (int(sys.argv[1]), int(sys.argv[1]))
