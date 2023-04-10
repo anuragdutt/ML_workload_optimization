@@ -165,13 +165,10 @@ if __name__ == "__main__":
 
 	subprocess.Popen("rm -rf /tmp/train_logs/",stdin=subprocess.PIPE,shell=True)
 
-	# if "matmul" not in sys.argv[4]:
-	command = """
-	python3 lib/{} {}
-	""".format(sys.argv[4],sys.argv[3])
-	# else:
-	# 	command = """ {}""".format(sys.argv[3])
-
+	if "batch" in sys.argv[4]:
+                command = """python3 lib/{} {}""".format(sys.argv[4],sys.argv[3])
+	else:
+	 	command = """lib/{} {}""".format(sys.argv[4], sys.argv[3])
 
 	print(command)
 # time.sleep(1)
