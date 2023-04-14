@@ -16,31 +16,34 @@ def set_state(cpus,cpu_max_fq,gpu_max_fq):
 		print(filename,state)
 		with open(filename,"w") as f:
 			f.write(str(state))
+			time.sleep(0.100)
 
 	filename = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq".format(i)
 	state = cpu_max_fq
 	print(filename,state)
 	with open(filename,"w") as f:
 		f.write(str(state))
-
+		time.sleep(0.100)
 	filename = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq".format(i)
 	state = cpu_max_fq
 	print(filename,state)
 	with open(filename,"w") as f:
 		f.write(str(state))
+		time.sleep(0.100)
 
 	filename = "/sys/devices/gpu.0/devfreq/57000000.gpu/min_freq".format(i)
 	state = gpu_max_fq
 	print(filename,state)
 	with open(filename,"w") as f:
 		f.write(str(state))
+		time.sleep(0.100)
 
 	filename = "/sys/devices/gpu.0/devfreq/57000000.gpu/max_freq".format(i)
 	state = gpu_max_fq
 	print(filename,state)
 	with open(filename,"w") as f:
 		f.write(str(state))
-
+		time.sleep(0.100)
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description='nvpmodel plus')
