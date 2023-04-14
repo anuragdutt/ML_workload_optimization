@@ -1,7 +1,7 @@
 import argparse
 import os
 import subprocess
-
+import time
 
 
 subprocess.Popen("nvpmodel -m 0",stdin=subprocess.PIPE,shell=True)
