@@ -32,7 +32,7 @@ if __name__ == "__main__":
     batch_size = sys.argv[1]
     batch_size = int(batch_size)
     # print(batch_size)
-    model = torchvision.models.alexnet()
+    model = torchvision.models.mobilenet_v2()
     model.cuda()
     model.eval()
 
@@ -55,10 +55,9 @@ if __name__ == "__main__":
             input = np.vstack((input, img_const))
         inputs.append(torch.from_numpy(input).cuda())
     
-    # print("Lazy loading run --"+ str(time.time()))
-    # model(inputs[0])
+    print("Lazy loading run --"+ str(time.time()))
+    model(inputs[0])
     print("TimePreModel --"+ str(time.time()))
     for i in range(0,50):
         for input in inputs:
-            tmp = model(input)
-    print("TimePostModel --"+ str(time.time()))
+            model(input)

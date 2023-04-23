@@ -162,7 +162,6 @@ def get_governor(cpus, idx):
         with open(governor_name, 'r') as f:
             cpus['CPU' + str(idx)]['governor'] = f.read()[:-1]
 
-
 def CPUS(text):
     """ Parse CPU information and extract status
 

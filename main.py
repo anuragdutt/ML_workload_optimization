@@ -88,6 +88,7 @@ if __name__ == "__main__":
 								process1.communicate()
 								print("Process 1 done ")
 								process3.terminate()
+								time.sleep(20)
 
 
 	subprocess.Popen("echo 600 > /proc/`pidof script`/oom_score_adj",stdin=subprocess.PIPE,shell=True)
