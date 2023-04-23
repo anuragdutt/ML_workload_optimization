@@ -8,7 +8,7 @@ import os
 sys.path.append("../")
 from tegrastats import Tegrastats
 from tegra_parse import VALS, MTS, RAM, SWAP, IRAM, CPUS, TEMPS, WATTS
-
+import gc
 
 def tegra_stats(tegrastats):
 	# Make configuration dict
@@ -19,6 +19,29 @@ def tegra_stats(tegrastats):
 	f.append(tegrastats)
 	f.append("\n")
 	f.close()
+
+def get_meminfo():
+	meminfo = {}
+	with open('/proc/meminfo') as f:
+		for line in f:
+			parts = line.split(':')
+			if len(parts) != 2:
+				continue
+			key = parts[0].strip()
+			val = parts[1].strip()
+			meminfo[key] = val
+	return meminfo
+
+
+def get_mem_usage():
+	meminfo = get_meminfo()
+	mem_total = int(meminfo['MemTotal'].split()[0])
+	mem_avail = int(meminfo['MemAvailable'].split()[0])
+	swap_total = int(meminfo['SwapTotal'].split()[0])
+	swap_free = int(meminfo['SwapFree'].split()[0])
+	mem_used = mem_total - mem_avail
+	swap_used = swap_total - swap_free
+	return mem_used,swap_used
 
 #argv 2 3 5 6 7 8 represent a unique experiment
 def _decode(text):
@@ -81,7 +104,8 @@ def logging(i2c_folder, cpu_usage_file, gpu_usage_file, f_stats, stop_logging):
 			stats = {}
 			cpu_data = cpu_usage.readline().split()
 			gpu_data = gpu_usage.readline()
-			
+			mem_data, swap_data = get_mem_usage()
+
 			#Here we calculate total cpu time across different columns
 			total_cpu = 0
 			for i in range(1,len(cpu_data)):
@@ -96,7 +120,7 @@ def logging(i2c_folder, cpu_usage_file, gpu_usage_file, f_stats, stop_logging):
 				int(cpu_data[4]),
 				int(total_cpu),
 				int(gpu_data),
-				json.dumps(tegra_val)),file=f_stats)
+				json.dumps(tegra_val)),file=f_stats)	
 				
 			time.sleep(0.100)
 			if stop_logging[0]:
@@ -171,6 +195,7 @@ if __name__ == "__main__":
 	 	command = """lib/{} {}""".format(sys.argv[4], sys.argv[3])
 
 	print(command)
+
 # time.sleep(1)
 # sys.exit(0)
 
