@@ -32,9 +32,11 @@ if __name__ == "__main__":
     batch_size = sys.argv[1]
     batch_size = int(batch_size)
     # print(batch_size)
+    print("TimePreModelLoading --"+ str(time.time()))
     model = torchvision.models.alexnet()
     model.cuda()
     model.eval()
+    print("TimePostModelLoading --"+ str(time.time()))
 
 
 #     print("count")
