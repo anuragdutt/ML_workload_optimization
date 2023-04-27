@@ -20,28 +20,29 @@ def tegra_stats(tegrastats):
 	f.append("\n")
 	f.close()
 
-def get_meminfo():
+def get_meminfo(f_memory):
 	meminfo = {}
-	with open('/proc/meminfo') as f:
-		for line in f:
-			parts = line.split(':')
-			if len(parts) != 2:
-				continue
-			key = parts[0].strip()
-			val = parts[1].strip()
-			meminfo[key] = val
+	for line in f_memory:
+		parts = line.split(':')
+		if len(parts) != 2:
+			continue
+		key = parts[0].strip()
+		val = parts[1].strip()
+		meminfo[key] = val
 	return meminfo
 
 
-def get_mem_usage():
-	meminfo = get_meminfo()
+def get_mem_usage(f_memory):
+	meminfo = get_meminfo(f_memory)
 	mem_total = int(meminfo['MemTotal'].split()[0])
 	mem_avail = int(meminfo['MemAvailable'].split()[0])
 	swap_total = int(meminfo['SwapTotal'].split()[0])
 	swap_free = int(meminfo['SwapFree'].split()[0])
 	mem_used = mem_total - mem_avail
 	swap_used = swap_total - swap_free
-	return mem_used,swap_used
+	mem_used_per = mem_used/mem_total
+	swap_used_per = swap_used/swap_total
+	return mem_used,swap_used, mem_used_per, swap_used_per
 
 #argv 2 3 5 6 7 8 represent a unique experiment
 def _decode(text):
@@ -85,7 +86,7 @@ def logging(i2c_folder, cpu_usage_file, gpu_usage_file, f_stats, stop_logging):
 			f_INP_power = open(i2c_folder+"in_power0_input","r")
 			f_GPU_power = open(i2c_folder+"in_power1_input","r")
 			f_CPU_power = open(i2c_folder+"in_power2_input","r")
-
+			f_memory = open('/proc/meminfo')
 			# Ref: https://supportcenter.checkpoint.com/supportcenter/portal?eventSubmit_doGoviewsolutiondetails=&solutionid=sk65143
 			# cpu 79242 0 74306 842486413 756859 6140 67701 0
 			# The /proc/stat is filled with data in the above said format
@@ -104,14 +105,14 @@ def logging(i2c_folder, cpu_usage_file, gpu_usage_file, f_stats, stop_logging):
 			stats = {}
 			cpu_data = cpu_usage.readline().split()
 			gpu_data = gpu_usage.readline()
-			mem_data, swap_data = get_mem_usage()
+			mem_data, swap_data, mper, sper = get_mem_usage(f_memory)
 
 			#Here we calculate total cpu time across different columns
 			total_cpu = 0
 			for i in range(1,len(cpu_data)):
 				total_cpu = total_cpu + int(cpu_data[i])
 
-			print("%s, %d, %d, %d, %d, %d, %d, %s" %(
+			print("%s, %d, %d, %d, %d, %d, %d, %d, %d, %s" %(
 				time.time(), 
 				int(f_INP_power.read()), 
 				int(f_GPU_power.read()), 
@@ -120,6 +121,8 @@ def logging(i2c_folder, cpu_usage_file, gpu_usage_file, f_stats, stop_logging):
 				int(cpu_data[4]),
 				int(total_cpu),
 				int(gpu_data),
+				int(mem_data),
+				int(swap_data),
 				json.dumps(tegra_val)),file=f_stats)	
 				
 			time.sleep(0.100)
@@ -129,6 +132,7 @@ def logging(i2c_folder, cpu_usage_file, gpu_usage_file, f_stats, stop_logging):
 				f_CPU_power.close() 
 				cpu_usage.close()
 				gpu_usage.close()
+				f_memory.close()
 				break
 	except KeyboardInterrupt:
 		pass
