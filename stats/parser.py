@@ -46,10 +46,15 @@ for file_name in files:
         continue
     f = open("../archive/analysis/"+file_name,"r")
     for idx,line in enumerate(f.readlines()):
+        # print(line)
         if len(line.split("--")) == 2 and line.split("--")[0] == "TimePreModel ":
-            threshold = float(line.split("--")[1])
+            threshold_pre = float(line.split("--")[1])
+        if len(line.split("--")) == 2 and line.split("--")[0] == "TimePostModel ":
+            threshold_post = float(line.split("--")[1])
+
     f.close()
-    #print("Threshold is " + str(threshold))
+    print("Pre Threshold is " + str(threshold_pre))
+    print("Post Threshold is " + str(threshold_post))
     file_name = "power_stats_" + file_name.split(".")[0]+".performance.log"
     print(file_name)
     f = open("../archive/analysis/"+file_name,"r")
@@ -116,7 +121,7 @@ for file_name in files:
                 iter_no,
                 cpu,
                 cpu_freq,
-                gpu_freq),file= f_stats if float(vals[0]) > threshold else f_model_stats)
+                gpu_freq),file= f_stats if float(vals[0]) > threshold_pre and float(vals[0]) < threshold_post else f_model_stats)
             prev_power_time = int(vals[4])
             prev_tpower_time = int(vals[5])
     f.close()
