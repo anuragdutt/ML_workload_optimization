@@ -38,7 +38,6 @@ if __name__ == "__main__":
     model.eval()
     print("TimePostModelLoading --"+ str(time.time()))
 
-
 #     print("count")
 
     imgs = []
@@ -57,8 +56,8 @@ if __name__ == "__main__":
             input = np.vstack((input, img_const))
         inputs.append(torch.from_numpy(input).cuda())
     
-    # print("Lazy loading run --"+ str(time.time()))
-    # model(inputs[0])
+    print("Lazy loading run --"+ str(time.time()))
+    tmp = model(inputs[0])
     print("TimePreModel --"+ str(time.time()))
     for i in range(0,50):
         for input in inputs:

@@ -5,7 +5,7 @@ import sys
 from os import listdir
 from os.path import isfile, join
 import numpy as np
-
+import gc
 
 
 # mypath = '../data/images'
@@ -29,14 +29,15 @@ def preprocess_image(channels=3):
 
 
 if __name__ == "__main__":
+    gc.disable()
     batch_size = sys.argv[1]
     batch_size = int(batch_size)
     # print(batch_size)
-    print("TimePreModelLoading --"+ str(time.time()))
     model = torchvision.models.mobilenet_v2()
     model.cuda()
+    
+
     model.eval()
-    print("TimePostModelLoading --"+ str(time.time()))
 
 
 #     print("count")
@@ -57,10 +58,16 @@ if __name__ == "__main__":
             input = np.vstack((input, img_const))
         inputs.append(torch.from_numpy(input).cuda())
     
-    # print("Lazy loading run --"+ str(time.time()))
-    # model(inputs[0])
+    
+    traced_model = torch.jit.trace(model, inputs[0])
+    cuda_model = traced_model.cuda()
+
+    print("Lazy loading run --"+ str(time.time()))
+    tmp = cuda_model(inputs[0])
     print("TimePreModel --"+ str(time.time()))
     for i in range(0,50):
         for input in inputs:
-            tmp = model(input)
+            tmp = cuda_model(input)
+    
     print("TimePostModel --"+ str(time.time()))
+    gc.enable()
