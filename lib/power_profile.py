@@ -209,6 +209,7 @@ if __name__ == "__main__":
 	t = threading.Thread(target=logging, args=[i2c_folder, cpu_usage_file, gpu_usage_file, f_stats, stop_logging]) #polls at 1/10 sec
 	tegra_thread.start()
 	t.start()
+	time.sleep(1)
 	process = subprocess.Popen(command,stdin=subprocess.PIPE,shell=True)
 
 	process.communicate()
