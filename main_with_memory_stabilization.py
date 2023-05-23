@@ -121,9 +121,10 @@ if __name__ == "__main__":
 								process1.communicate()
 								print("Process 1 done ")
 								process3.terminate()
-								# time.sleep(20)
+								# time.sleep(20
+							        mem_chk_time_start = datetime.datetime.now()
+
 								while mem_wait:
-									mem_chk_time_start = datetime.datetime.now()
 									mem_data, swap_data, mper, sper = get_mem_usage()
 									if mper < mem_threshold:
 										mem_wait = False
