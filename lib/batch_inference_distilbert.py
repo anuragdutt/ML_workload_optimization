@@ -1,46 +1,66 @@
 import torch
-from transformers import BertTokenizer, BertForSequenceClassification
-import random
-import string
-import numpy as np
-import time
+from transformers import DistilBertTokenizer, DistilBertForSequenceClassification
+import os
 import sys
+import random
+import time
 
 random.seed(123456789)
-
-def generate_random_sentence(size_kb):
-    target_size_bytes = size_kb * 1024
-    avg_bytes_per_char = 1
-
-    num_chars = target_size_bytes // avg_bytes_per_char
-    sentence = ''.join(random.choice(string.ascii_lowercase + string.ascii_uppercase + ' ') for _ in range(int(num_chars)))
-    return sentence.strip()
+def generate_random_sentence(lexicon, length):
+	sentence = ' '.join(random.choices(lexicon, k=length))
+	return sentence.capitalize() + '.'
 
 
 if __name__ == "__main__":
-    batch_size = int(sys.argv[1])
-    print("TimePreModelLoading --", time.time())
-    model_name = "distilbert-base-uncased"
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    tokenizer = BertTokenizer.from_pretrained(model_name)
-    model = BertForSequenceClassification.from_pretrained(model_name)
-    model.to(device)
-    model.eval()
-    print("TimePostModelLoading --", time.time())
 
-    sentences = []
-    np.random.seed(123456789)
-    sentence_const = generate_random_sentence(size_kb=1.1)
-    count = 64
-    print("Generated Sentences")
+	batch_size = int(sys.argv[1])
+	sentence_length = 128
+	# Load the pre-trained DistilBERT model and tokenizer
+	print("TimePreModelLoading --", time.time())
+	model_name = 'distilbert-base-uncased'
+	tokenizer = DistilBertTokenizer.from_pretrained(model_name)
+	model = DistilBertForSequenceClassification.from_pretrained(model_name)
 
-    inputs = []
-    for i in range(0, int(64 / batch_size)):
-        input = [sentence_const] * batch_size
-        inputs.append(tokenizer(input, padding=True, truncation=True, return_tensors="pt").to(device))
+	# Set device to GPU if available, otherwise use CPU
+	device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+	model.to(device)
+	model.eval()
+	print("TimePostModelLoading --", time.time())
 
-    print("TimePreModel --", time.time())
-    for i in range(0, 50):
-        for input in inputs:
-            outputs = model(**input)
-    print("TimePostModel --", time.time())
+	lexicon = ['The', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'lazy', 'dog']
+	sentence_const = generate_random_sentence(lexicon, sentence_length)
+
+
+	# Define the sentiment labels
+	sentiment_labels = {
+			0: 'Negative',
+			1: 'Positive'
+		}
+
+	inputs = []
+	for i in range(0, int(64 / batch_size)):
+		input = [sentence_const] * batch_size
+		# Tokenize input text
+		input_sentence = tokenizer.batch_encode_plus(
+			input,
+			add_special_tokens=True,
+			return_tensors='pt',
+			truncation=True,
+			padding='max_length',
+			max_length = sentence_length
+		)
+		inputs.append(input_sentence)
+
+
+	input_ids = input_sentence['input_ids'].to(device)
+	attention_mask = input_sentence['attention_mask'].to(device)
+	print("Generated Sentences")
+
+	print("TimePreModel --", time.time())
+	# Perform sentiment classification
+	for i in range(0, 50):
+		for input in inputs:
+			outputs = model(input_ids, attention_mask=attention_mask)
+	print("TimePostModel --", time.time())
+
+
