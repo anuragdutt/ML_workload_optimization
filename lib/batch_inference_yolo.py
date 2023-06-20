@@ -45,7 +45,7 @@ print("Processed Images")
 print("TimePreModelLoading --"+ str(time.time()))
 
 # Load YOLO
-net = cv2.dnn.readNet("yolov4-tiny.weights", "yolov4-tiny.cfg")
+net = cv2.dnn.readNet("/home/pace/execution/ML_workload_optimization/models/yolov4-tiny.weights", "/home/pace/execution/ML_workload_optimization/models/yolov4-tiny.cfg")
 
 # Enable CUDA for faster inference
 net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
